@@ -23,7 +23,7 @@ public class CommandsEventListener extends ListenerAdapter {
 
   public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
     try {
-      Matcher matcher = commandPattern.matcher(event.getMessage().getContentDisplay());
+      Matcher matcher = commandPattern.matcher(event.getMessage().getContentRaw());
 
       if(matcher.matches()) {
         List<Object> args = new ArrayList<>();
