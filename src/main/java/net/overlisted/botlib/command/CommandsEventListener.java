@@ -76,7 +76,7 @@ public class CommandsEventListener extends ListenerAdapter {
 
         for(Method it: this.commandTriggers) {
           boolean hasArgumentWithSpaces = it.getParameterAnnotations().length > 0
-            && it.getParameterAnnotations()[1].length > 0
+            && it.getParameterAnnotations()[1].length > 1
             && it.getParameterAnnotations()[1][0].annotationType().equals(ContainsSpaces.class);
 
           if(
