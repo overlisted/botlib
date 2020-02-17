@@ -67,7 +67,7 @@ public class CommandsEventListener extends ListenerAdapter {
             iArgument.append(argumentsCharArray[i]);
             if(
               (argumentsCharArray.length > i + 1 && argumentsCharArray[i + 1] == ' ')
-              || i == argumentsCharArray.length - 1
+                || i == argumentsCharArray.length - 1
             ) {
               args.add(iArgument.toString());
               iArgument = new StringBuilder();
@@ -76,13 +76,29 @@ public class CommandsEventListener extends ListenerAdapter {
         }
 
         for(Method it: this.commandTriggers) {
+          boolean hasArgumentWithSpaces = it.getParameterAnnotations().length > 0
+            && it.getParameterAnnotations()[1].length > 0
+            && it.getParameterAnnotations()[1][0].annotationType().equals(ContainsSpaces.class);
+
           if(
             matcher.group("commandGroup").equals(
               it.getDeclaringClass().getAnnotation(CommandsController.class).commandsGroup()
             )
               && matcher.group("commandName").equals(it.getName())
-              && args.size() == it.getParameterCount()
+              && (args.size() == it.getParameterCount() || hasArgumentWithSpaces)
           ) {
+            if(hasArgumentWithSpaces) {
+              Object message = args.get(0);
+              args.remove(0);
+
+              @SuppressWarnings("SuspiciousToArrayCall")
+              Object argument = String.join(" ", args.toArray(new String[0]));
+
+              args.clear();
+              args.add(message);
+              args.add(argument);
+            }
+
             Object result = it.invoke(
               it.getDeclaringClass().getDeclaredConstructor().newInstance(),
               args.toArray(new Object[0])
