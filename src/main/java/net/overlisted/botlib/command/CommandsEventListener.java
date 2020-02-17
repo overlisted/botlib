@@ -1,5 +1,6 @@
 package net.overlisted.botlib.command;
 
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +54,18 @@ public class CommandsEventListener extends ListenerAdapter {
               && matcher.group("commandName").equals(it.getName())
               && args.size() == it.getParameterCount()
           ) {
-            it.invoke(it.getDeclaringClass().getDeclaredConstructor().newInstance(), args.toArray(new Object[0]));
+            Object result = it.invoke(
+              it.getDeclaringClass().getDeclaredConstructor().newInstance(),
+              args.toArray(new Object[0])
+            );
+
+            if(result instanceof String) {
+              event.getChannel().sendMessage((String) result).submit();
+            }
+
+            if(result instanceof MessageEmbed) {
+              event.getChannel().sendMessage((MessageEmbed) result).submit();
+            }
           }
         }
       }
