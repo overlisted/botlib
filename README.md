@@ -7,13 +7,13 @@ import net.overlisted.botlib.command.CommandTrigger;
 import net.overlisted.botlib.command.CommandsController;
 
 @CommandsController(
-  token = "my token",
+  token = "USE YOUR TOKEN",
   commandsGroup = "mybot"
 )
 public class MyBotCommands {
   @CommandTrigger
-  public void test(Message message, String text) {
-    message.getChannel().sendMessage(text).submit();
+  public String test(Message message, String text) {
+    return text;
   }
 }
 ```
