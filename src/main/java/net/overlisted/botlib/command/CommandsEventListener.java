@@ -32,13 +32,17 @@ public class CommandsEventListener extends ListenerAdapter {
       if(event.getMessage().getContentRaw().equals("/help")) {
         EmbedBuilder builder = new EmbedBuilder();
 
-        builder.setAuthor(this.controller.getAnnotation(CommandsController.class).nameBeautified());
+        final CommandsController controller = this.controller.getAnnotation(CommandsController.class);
+
+        builder.setAuthor(controller.nameBeautified());
         builder.setTitle("Commands");
 
         for(Method commandTrigger: this.commandTriggers) {
+          final CommandTrigger trigger = commandTrigger.getAnnotation(CommandTrigger.class);
+
           builder.addField(
-            commandTrigger.getAnnotation(CommandTrigger.class).beatifiedName(),
-            "/" + commandTrigger.getName() + " " + commandTrigger.getAnnotation(CommandTrigger.class).args(),
+            trigger.beatifiedName(),
+            "/" + controller.commandsGroup() + " " + commandTrigger.getName() + " " + trigger.args(),
             false
           );
         }
