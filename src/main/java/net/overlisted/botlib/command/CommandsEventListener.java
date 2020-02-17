@@ -16,14 +16,43 @@ public class CommandsEventListener extends ListenerAdapter {
     "^/(?<commandGroup>[^\\s]+)\\s(?<commandName>[^\\s]+)(?<commandArgs>\\s.+)*$"
   );
 
+  private final Class<?> controller;
   private final Method[] commandTriggers;
 
-  public CommandsEventListener(Method[] commandTriggers) {
+  public CommandsEventListener(Class<?> controller, Method[] commandTriggers) {
+    this.controller = controller;
     this.commandTriggers = commandTriggers;
   }
 
   public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
     try {
+      if(event.getMessage().getContentRaw().equals("/help")) {
+        StringBuilder builder = new StringBuilder();
+
+        builder
+          .append("**")
+          .append(this.controller.getAnnotation(CommandsController.class).nameBeautified())
+          .append("**")
+          .append(":")
+          .append('\n');
+
+        for(Method trigger: this.commandTriggers) {
+          builder
+            .append('/')
+            .append(this.controller.getAnnotation(CommandsController.class).commandsGroup())
+            .append(' ')
+            .append(trigger.getName())
+            .append(' ')
+            .append(trigger.getAnnotation(CommandTrigger.class).value());
+
+          builder.append('\n');
+        }
+
+        event.getChannel().sendMessage(builder).submit();
+
+        return;
+      }
+
       Matcher matcher = commandPattern.matcher(event.getMessage().getContentRaw());
 
       if(matcher.matches()) {
