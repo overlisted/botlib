@@ -1,5 +1,6 @@
 package net.overlisted.botlib.command;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -29,28 +30,20 @@ public class CommandsEventListener extends ListenerAdapter {
   public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
     try {
       if(event.getMessage().getContentRaw().equals("/help")) {
-        StringBuilder builder = new StringBuilder();
+        EmbedBuilder builder = new EmbedBuilder();
 
-        builder
-          .append("**")
-          .append(this.controller.getAnnotation(CommandsController.class).nameBeautified())
-          .append("**")
-          .append(":")
-          .append('\n');
+        builder.setAuthor(this.controller.getAnnotation(CommandsController.class).nameBeautified());
+        builder.setTitle("Commands");
 
-        for(Method trigger: this.commandTriggers) {
-          builder
-            .append('/')
-            .append(this.controller.getAnnotation(CommandsController.class).commandsGroup())
-            .append(' ')
-            .append(trigger.getName())
-            .append(' ')
-            .append(trigger.getAnnotation(CommandTrigger.class).value());
-
-          builder.append('\n');
+        for(Method commandTrigger: this.commandTriggers) {
+          builder.addField(
+            commandTrigger.getAnnotation(CommandTrigger.class).beatifiedName(),
+            "/" + commandTrigger.getName() + " " + commandTrigger.getAnnotation(CommandTrigger.class).args(),
+            false
+          );
         }
 
-        event.getChannel().sendMessage(builder).submit();
+        event.getChannel().sendMessage(builder.build()).submit();
 
         return;
       }

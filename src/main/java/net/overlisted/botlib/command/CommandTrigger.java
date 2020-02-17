@@ -7,7 +7,12 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommandTrigger {
   /**
+   * @return Command name in /help
+   */
+  String beatifiedName();
+
+  /**
    * @return List of arguments in /help
    */
-  String value();
+  String args();
 }
