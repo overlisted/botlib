@@ -17,10 +17,12 @@ public class CommandsEventListener extends ListenerAdapter {
   );
 
   private final Class<?> controller;
+  private final Object controllerInstance;
   private final Method[] commandTriggers;
 
-  public CommandsEventListener(Class<?> controller, Method[] commandTriggers) {
+  public CommandsEventListener(Class<?> controller, Method[] commandTriggers) throws Throwable {
     this.controller = controller;
+    this.controllerInstance = controller.getDeclaredConstructor().newInstance();
     this.commandTriggers = commandTriggers;
   }
 
@@ -100,7 +102,7 @@ public class CommandsEventListener extends ListenerAdapter {
             }
 
             Object result = it.invoke(
-              it.getDeclaringClass().getDeclaredConstructor().newInstance(),
+              this.controllerInstance,
               args.toArray(new Object[0])
             );
 
